@@ -54,3 +54,14 @@ left join cd.facilities using(facid)
 where (CASE WHEN cd.bookings.memid = 0 THEN cd.bookings.slots * cd.facilities.guestcost ELSE cd.bookings.slots * cd.facilities.membercost END) > 30 and
 (starttime BETWEEN '2012-09-14 00:00:00' AND '2012-09-14 23:59:59')
 order by cost desc
+
+
+/*How can you output a list of all members, including the individual who recommended them (if any), without using any joins? 
+Ensure that there are no duplicates in the list, and that each firstname + surname pairing is formatted as a column and ordered.*/
+
+SELECT DISTINCT concat(one.firstname,' ',one.surname) as member,
+(SELECT concat(two.firstname,' ',two.surname) FROM cd.members AS two
+WHERE two.memid=one.recommendedby) AS recommender 
+FROM cd.members as one
+ORDER BY
+member;
