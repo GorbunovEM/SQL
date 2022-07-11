@@ -95,6 +95,13 @@ count(*) over (order by salary groups between current row and unbounded followin
 from employees
 order by salary
 
+#Есть таблица сотрудников employees. Предположим, для каждого человека мы хотим увидеть ближайшую большую зарплату (next_salary):
+select id, name, salary,
+nth_value(salary, 1) over (order by salary groups between 1 following and unbounded following) as next_salary
+from employees
+order by salary, next_salary
+
+
 
 
 
