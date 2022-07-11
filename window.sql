@@ -129,8 +129,26 @@ from employees
 order by id;
 
 
+#Посчитайте выручку для тарифа gold по месяцам 2020 года. Для каждого месяца дополнительно укажите:
 
+#выручку за предыдущий месяц (prev);
+#процент, который составляет выручка текущего месяца от prev (perc).
+#Процент округлите до целого.
+with CTE as (
+select year, month, revenue,
+nth_value(revenue, 1) over (order by month rows between 1 preceding and 1 preceding) as 'prev'
+from 
+(
+select year, month, revenue
+from sales
+where plan = 'gold' and year = 2020
+) as t
+order by month
+)
 
+select year, month, revenue, prev,
+round(revenue * 100  /prev, 0) as 'perc'
+from CTE
 
 
 
