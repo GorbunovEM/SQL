@@ -79,6 +79,25 @@ from employees
 
 
 
+#Напишите запрос, который для каждого сотрудника выведет:
+
+#размер з/п предыдущего по зарплате сотрудника (среди коллег по департаменту);
+#максимальную з/п по департаменту.
+
+select id, name, department, salary,
+first_value(salary) over (partition by department rows between 1 preceding and current row) as prev_salary,
+max(salary) over (partition by department) as max_salary
+from employees
+
+#Есть таблица сотрудников employees. Предположим, для каждого человека мы хотим посчитать количество сотрудников, которые получают такую же или большую зарплату (ge_cnt)
+select id, name, salary,
+count(*) over (order by salary groups between current row and unbounded following) as ge_cnt
+from employees
+order by salary
+
+
+
+
 
 
 
