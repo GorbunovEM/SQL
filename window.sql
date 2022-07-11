@@ -101,6 +101,33 @@ nth_value(salary, 1) over (order by salary groups between 1 following and unboun
 from employees
 order by salary, next_salary
 
+#Есть таблица сотрудников employees. Предположим, для каждого человека мы хотим посчитать количество сотрудников, которые получают такую же или большую зарплату, но не более чем +10 тыс. ₽ (p10_cnt):
+select id, name, salary,
+count(*) over (order by salary range between current row and 10 following) as p10_cnt
+from employees
+order by salary
+
+#Есть таблица сотрудников employees. Предположим, для каждого человека мы хотим определить максимальную зарплату среди тех, у кого зарплата на 10–30 тыс. ₽ меньше чем у него
+select id, name, salary,
+max(salary) over (order by salary range between 30 preceding and 10 preceding) as lower_sal
+from employees
+order by salary
+
+#Есть таблица сотрудников employees. Предположим, для каждого человека мы хотим посчитать среднюю зарплату сотрудников, которые получают столько же или больше, чем он — но не более чем +20 тыс. ₽ (p20_sal). При этом зарплату самого сотрудника учитывать не следует
+select id, name, salary,
+round(avg(salary) over (order by salary range between current row and 20 following exclude current row), 0) as p20_sal 
+from employees
+order by salary
+
+#А теперь еще хотим посчитать, сколько процентов составляет зарплата сотрудника от средней по Москве и средней по Самаре.
+select
+  id, name, salary,
+  round(salary * 100 / avg(salary) over ()) as "perc",
+  round(salary * 100/ avg(salary) filter(where city <> 'Самара') over ()) as 'msk',
+  round(salary * 100/ avg(salary) filter(where city <> 'Москва') over ()) as 'sam'
+from employees
+order by id;
+
 
 
 
