@@ -150,7 +150,18 @@ select year, month, revenue, prev,
 round(revenue * 100  /prev, 0) as 'perc'
 from CTE
 
+#Посчитайте выручку нарастающим итогом по каждому тарифному плану за первые три месяца 2020 года.
+select plan, year, month, revenue, 
+sum(revenue) over (partition by plan order by month) as total
+from sales
+where year = 2020 and month in (1, 2, 3)
 
+#Посчитайте скользящую среднюю выручку за 3 месяца для тарифа platinum в 2020 году. Округлите среднюю выручку до целого.
+select year, month, revenue, 
+round(avg(revenue) filter (where plan = 'platinum' and year = 2020) over (order by month rows between 1 preceding and 1 following), 0) as 'avg3m'
+from sales
+where year = 2020 and plan = 'platinum'
+order by month
 
 
 
